@@ -1,0 +1,257 @@
+---
+title: JavaScript Calculator
+---
+<div id="calculator">
+	<!-- display and clear -->
+	<div class="top">
+		<span class="clear">C</span>
+		<div class="screen"></div>
+	</div>
+	
+	<div class = "keys">
+		<!-- Memory keys -->
+		<span class = "memory">MC</span>
+		<span class = "memory">MS</span>
+		<span class = "memory">MR</span>
+		<span class = "memoryPlus">M+</span>
+	</div>
+
+	<div class="keys">
+		<!-- Numbers and Ops -->
+		<span class="functions">sin</span>
+		<span class="functions">cos</span>
+		<span class="functions">tan</span>
+		<span class="delete operator">DEL</span>
+		<span class="functions">ln</span>
+		<span class="functions">log</span>
+		<span class="functions">π</span>
+		<span class="sqrt operator">√</span>
+		<span>7</span>
+		<span>8</span>
+		<span>9</span>
+		<span class="operator">exp</span>
+		<span>4</span>
+		<span>5</span>
+		<span>6</span>
+		<span class="operator">x</span>
+		<span>1</span>
+		<span>2</span>
+		<span>3</span>
+		<span class="operator">÷</span>
+		<span>0</span>
+		<span>.</span>
+		<span>,</span>
+		<span class="operator">+</span>
+		<span>(</span>
+		<span>)</span>
+		<span class="eval">=</span>
+		<span class="operator">-</span>
+	</div>
+</div>
+
+<script>
+var keys = document.querySelectorAll('#calculator span');
+var operators = ['+', '-', 'x', '÷'];
+var decimalAdded = false;
+var memory = [];
+var memVal = 0;
+var memButton = false;
+var pi=22/7;
+var reset = false;
+
+function log(x){
+	return Math.log(x)/Math.log(10);
+}
+
+// Add event to all the keys and perform operations
+for(var i = 0; i < keys.length; i++) {
+	keys[i].onclick = function(e) {
+		// Get the input and button values
+		var input = document.querySelector('.screen');
+		var inputVal = input.innerHTML;
+		var btnVal = this.innerHTML;
+		 		
+		// If clear key is pressed, erase everything
+		if(btnVal == 'C') {
+			input.innerHTML = '';
+			decimalAdded = false;
+			exp = '';
+			reset = false;
+		}
+
+		else if(btnVal=='DEL'){
+			var equation=inputVal;
+			equation=equation.replace(/.$/,'');
+			input.innerHTML=equation;
+			reset = false;
+		}
+
+		// If Memory clear is pressed, clear memory
+		else if(btnVal == 'MC'){
+			memVal = 0;
+			input.innerHTML = '';
+			decimalAdded = false;
+		}
+
+		// If Memory Save is pressed, store value displayed to memory
+		else if(btnVal == 'MS'){
+			memVal = parseFloat(inputVal);
+			memButton = true;
+		}
+
+		// If Memory Recall is pressed, display value saved in memory to screen
+		else if(btnVal == 'MR'){
+			input.innerHTML = memVal;
+			memButton = true;
+			reset = true;
+		}
+
+		// If Memory Add is pressed, add displayed value to the saved memory value
+		else if(btnVal == 'M+'){
+			memVal += parseFloat(inputVal);
+			memButton = true;
+		}
+
+
+		
+		// If eval key is pressed, calculate and display the result
+		else if(btnVal == '=') {
+			var equation = inputVal;
+			var lastChar = equation[equation.length - 1];
+			
+			// Replace all instances of x and ÷, with * and / 
+			equation = equation.replace(/x/g, '*').replace(/÷/g, '/').replace(/sqrt/g,'Math.sqrt').replace(/pow/g,'Math.pow').replace(/ln/g,'Math.log').replace(/cos/g,'Math.cos').replace(/sin/g,'Math.sin').replace(/tan/g,'Math.tan');
+			
+			// Check the last character of the equation, if it's an operator or a decimal, remove it
+			if(operators.indexOf(lastChar) > -1 || lastChar == '.')
+				equation = equation.replace(/.$/, '');
+			
+			if(equation) {
+				input.innerHTML = eval(equation);
+				memory.push(input.innerHTML);
+			}
+				
+			decimalAdded = false;
+			reset = true;
+		}
+
+		else if(operators.indexOf(btnVal) > -1) {
+			memButton = false;
+			// Operator is clicked
+			// Get the last character from the equation
+			var lastChar = inputVal[inputVal.length - 1];
+			
+			// Only add operator if input is not empty and there is no operator at the end
+			if(inputVal != '' && operators.indexOf(lastChar) == -1) 
+				input.innerHTML += btnVal;
+			
+			// Allow minus if the string is empty
+			else if(inputVal == '' && btnVal == '-') 
+				input.innerHTML += btnVal;
+			
+			// Replace operators if more than one pressed in a row
+			if(operators.indexOf(lastChar) > -1 && inputVal.length > 1) {
+
+				input.innerHTML = inputVal.replace(/.$/, btnVal);
+			}
+			
+			decimalAdded =false;
+			reset = false;
+		}
+
+		else if(btnVal=='√'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='sqrt(';
+			decimalAdded==false;
+		}
+
+		else if(btnVal=='exp'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='pow(';
+			decimalAdded==false;
+		}
+
+		else if(btnVal=='ln'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='ln(';
+			decimalAdded==false;
+		}
+
+		else if(btnVal=='log'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='log(';
+			decimalAdded==false;
+
+		}
+
+		else if(btnVal=='cos'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='cos(';
+			decimalAdded==false;
+		}
+
+		else if(btnVal=='sin'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='sin(';
+			decimalAdded==false;
+		}		
+
+		else if(btnVal=='tan'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='tan(';
+			decimalAdded==false;
+		}
+
+		else if(btnVal=='π'){
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML+='pi'
+		}
+		
+		// Only allow one decimal in a row
+		else if(btnVal == '.') {
+			if (!decimalAdded) {
+				input.innerHTML += btnVal;
+				decimalAdded = true;
+			}
+		}
+
+		else {
+			if(memButton){
+				input.innerHTML = '';
+			}
+			if(reset == true){
+				input.innerHTML = '';
+				reset = false;
+			}
+			input.innerHTML += btnVal;
+			memButton = false;
+		}
+
+		e.preventDefault();
+	}
+}
+</script>
